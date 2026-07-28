@@ -27,7 +27,7 @@
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             margin: 1rem;
             display: flex;
             flex-direction: column;
@@ -119,8 +119,24 @@
             border-radius: 8px;
             padding: 1rem;
             margin-bottom: 1.5rem;
+            background-color: #fafafa;
         }
-        legend { padding: 0 0.5rem; font-weight: 600; color: #111; }
+        legend { padding: 0 0.5rem; font-weight: 600; color: var(--primary-teal); }
+
+        .repeat-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            background: #e6f2f2;
+            padding: 0.6rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-teal);
+            cursor: pointer;
+        }
+        .repeat-checkbox input { cursor: pointer; width: 16px; height: 16px; }
     </style>
 </head>
 <body>
@@ -163,25 +179,25 @@
                 <div class="flex-row">
                     <div class="form-group flex-item">
                         <label for="agentName">Agent Name *</label>
-                        <input type="text" id="agentName" name="Agent 1 Name" required placeholder="John Doe">
+                        <input type="text" id="agentName" name="Agent 1 Name" required placeholder="Chris Tyson">
                     </div>
                     <div class="form-group flex-item">
                         <label for="phoneNumber">Phone Number *</label>
-                        <input type="tel" id="phoneNumber" name="Phone Number" required placeholder="082 123 4567">
+                        <input type="tel" id="phoneNumber" name="Phone Number" required placeholder="061 234 5678">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="agent2Name">Agent 2 Name (Optional)</label>
-                    <input type="text" id="agent2Name" name="Agent 2 Name" placeholder="Jane Doe">
+                    <input type="text" id="agent2Name" name="Agent 2 Name" placeholder="e.g. Jane Doe">
                 </div>
             </fieldset>
 
             <!-- Board Quantity Selection -->
             <fieldset>
-                <legend>Order Details</legend>
+                <legend>Order Quantity</legend>
                 <div class="form-group">
                     <label for="boardQuantity">Boards Quantity *</label>
-                    <select id="boardQuantity" name="Boards Quantity" required onchange="toggleConditionalFields(this.value)">
+                    <select id="boardQuantity" name="Boards Quantity" required onchange="renderBoardConfigurations(this.value)">
                         <option value="">Select quantity...</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -193,47 +209,13 @@
                 </div>
             </fieldset>
 
-            <!-- Dynamic Options Section -->
-            <div id="conditionalFields" class="hidden">
+            <!-- Dynamic Boards Container -->
+            <div id="boardsContainer"></div>
+
+            <!-- Global Options (Arrow & Notes) -->
+            <div id="globalOptions" class="hidden">
                 <fieldset>
-                    <legend>Board Configuration</legend>
-                    <div class="flex-row">
-                        <div class="form-group flex-item">
-                            <label for="boardType">Board Type</label>
-                            <select id="boardType" name="Board Type">
-                                <option value="For Sale">For Sale</option>
-                                <option value="To Let">To Let</option>
-                                <option value="On Show">On Show</option>
-                                <option value="Sold">Sold</option>
-                                <option value="Rented/Let By">Rented/Let By</option>
-                                <option value="Commercial For Sale">Commercial For Sale</option>
-                                <option value="Commercial To Let">Commercial To Let</option>
-                                <option value="Commercial Sold">Commercial Sold</option>
-                                <option value="Commercial Rented">Commercial Rented</option>
-                            </select>
-                        </div>
-                        <div class="form-group flex-item">
-                            <label for="stickers">Stickers</label>
-                            <select id="stickers" name="Stickers">
-                                <option value="Sole Mandate">Sole Mandate</option>
-                                <option value="Joint Mandate">Joint Mandate</option>
-                                <option value="CLS Mandate">CLS Mandate</option>
-                                <option value="Open Mandate (No Sticker)">Open Mandate (No Sticker)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- NEW: Mounting / Frame Options Dropdown -->
-                    <div class="form-group">
-                        <label for="mountingOption">Frame &amp; Mounting Option</label>
-                        <select id="mountingOption" name="Frame & Mounting Option">
-                            <option value="Metal Frame">Metal Frame</option>
-                            <option value="Hanging Frame">Hanging Frame</option>
-                            <option value="Cable Ties">Cable Ties</option>
-                            <option value="Double sided Tape">Double sided Tape</option>
-                        </select>
-                    </div>
-
+                    <legend>Additional Details</legend>
                     <div class="form-group">
                         <label>Include Arrow?</label>
                         <div class="radio-group">
@@ -247,9 +229,10 @@
                         <textarea id="notes" name="Special Requests / Notes" placeholder="Enter special requests or custom instructions..."></textarea>
                     </div>
                 </fieldset>
+
+                <button type="submit" class="btn">Submit Requisition</button>
             </div>
 
-            <button type="submit" class="btn">Submit Requisition</button>
             <button type="button" class="btn btn-secondary" onclick="showLanding()">Back to Home</button>
         </form>
     </div>
@@ -257,12 +240,13 @@
 </div>
 
 <script>
-    // Navigation Control
+    // Navigation Controls
     function showLanding() {
         document.getElementById('landingView').classList.remove('hidden');
         document.getElementById('formView').classList.add('hidden');
         document.getElementById('requisitionForm').reset();
-        toggleConditionalFields(''); 
+        document.getElementById('boardsContainer').innerHTML = '';
+        document.getElementById('globalOptions').classList.add('hidden');
     }
 
     function showForm() {
@@ -271,13 +255,100 @@
         window.scrollTo(0, 0);
     }
 
-    // Dynamic Fields Display logic
-    function toggleConditionalFields(quantity) {
-        const conditionalDiv = document.getElementById('conditionalFields');
-        if (quantity && quantity >= 1 && quantity <= 6) {
-            conditionalDiv.classList.remove('hidden');
-        } else {
-            conditionalDiv.classList.add('hidden');
+    // Dynamic Board Configurations Generator
+    function renderBoardConfigurations(quantity) {
+        const container = document.getElementById('boardsContainer');
+        const globalOpts = document.getElementById('globalOptions');
+        container.innerHTML = '';
+
+        const qty = parseInt(quantity);
+        if (!qty || qty < 1) {
+            globalOpts.classList.add('hidden');
+            return;
+        }
+
+        globalOpts.classList.remove('hidden');
+
+        for (let i = 1; i <= qty; i++) {
+            const boardFieldset = document.createElement('fieldset');
+            
+            let repeatCheckboxHTML = '';
+            if (i > 1) {
+                repeatCheckboxHTML = `
+                    <label class="repeat-checkbox">
+                        <input type="checkbox" id="repeatBoard${i}" onchange="toggleRepeatBoard(this, ${i})">
+                        Repeat Board 1 Configuration
+                    </label>
+                `;
+            }
+
+            boardFieldset.innerHTML = `
+                <legend>Board ${i} Configuration</legend>
+                ${repeatCheckboxHTML}
+                <div class="flex-row">
+                    <div class="form-group flex-item">
+                        <label for="boardType_${i}">Board Type</label>
+                        <select id="boardType_${i}" name="Board ${i} - Type" onchange="syncIfRepeated(${i})">
+                            <option value="For Sale">For Sale</option>
+                            <option value="To Let">To Let</option>
+                            <option value="On Show">On Show</option>
+                            <option value="Sold">Sold</option>
+                            <option value="Rented/Let By">Rented/Let By</option>
+                            <option value="Commercial For Sale">Commercial For Sale</option>
+                            <option value="Commercial To Let">Commercial To Let</option>
+                            <option value="Commercial Sold">Commercial Sold</option>
+                            <option value="Commercial Rented">Commercial Rented</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex-item">
+                        <label for="stickers_${i}">Stickers</label>
+                        <select id="stickers_${i}" name="Board ${i} - Sticker" onchange="syncIfRepeated(${i})">
+                            <option value="Sole Mandate">Sole Mandate</option>
+                            <option value="Joint Mandate">Joint Mandate</option>
+                            <option value="CLS Mandate">CLS Mandate</option>
+                            <option value="Open Mandate (No Sticker)">Open Mandate (No Sticker)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mounting_${i}">Frame &amp; Mounting Option</label>
+                    <select id="mounting_${i}" name="Board ${i} - Mounting" onchange="syncIfRepeated(${i})">
+                        <option value="Metal Frame">Metal Frame</option>
+                        <option value="Hanging Frame">Hanging Frame</option>
+                        <option value="Cable Ties">Cable Ties</option>
+                        <option value="Double sided Tape">Double sided Tape</option>
+                    </select>
+                </div>
+            `;
+            container.appendChild(boardFieldset);
+        }
+    }
+
+    // Handles logic when "Repeat Board 1 Config" checkbox is toggled
+    function toggleRepeatBoard(checkbox, boardIndex) {
+        if (checkbox.checked) {
+            copyBoard1To(boardIndex);
+        }
+    }
+
+    // Copies values from Board 1 to target Board
+    function copyBoard1To(targetIndex) {
+        document.getElementById(`boardType_${targetIndex}`).value = document.getElementById('boardType_1').value;
+        document.getElementById(`stickers_${targetIndex}`).value = document.getElementById('stickers_1').value;
+        document.getElementById(`mounting_${targetIndex}`).value = document.getElementById('mounting_1').value;
+    }
+
+    // If Board 1 is modified, automatically update all boards that have "Repeat" checked
+    function syncIfRepeated(sourceIndex) {
+        if (sourceIndex === 1) {
+            const qty = parseInt(document.getElementById('boardQuantity').value) || 1;
+            for (let i = 2; i <= qty; i++) {
+                const chk = document.getElementById(`repeatBoard${i}`);
+                if (chk && chk.checked) {
+                    copyBoard1To(i);
+                }
+            }
         }
     }
 </script>
