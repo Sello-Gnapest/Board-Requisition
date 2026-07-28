@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Property Board Requisition</title>
+    <title>Tyson Properties Board Requisition</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg: #f8fafc;
-            --text: #1e293b;
-            --border: #cbd5e1;
+            --primary-teal: #015151; /* Main Tyson brand color */
+            --accent-green: #9acd32; /* Yellow-green stripe color */
+            --bg-off-white: #f5f5f5;
+            --text-dark: #333;
+            --border-grey: #ccc;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-off-white);
+            color: var(--text-dark);
             margin: 0;
             padding: 0;
             display: flex;
@@ -28,77 +28,97 @@
         .container {
             width: 100%;
             max-width: 600px;
+            margin: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
             background: white;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            margin: 1rem;
-            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
-        /* Landing View */
-        .landing-view {
-            text-align: center;
-            padding: 2rem 0;
-        }
+        /* Typography */
+        h1 { margin: 0 0 1rem 0; font-size: 1.4rem; color: var(--primary-teal); }
+        h2 { margin: 0 0 1rem 0; font-size: 1.2rem; color: #111; }
+        .subtitle { color: #666; margin-bottom: 2rem; }
 
-        h1 { margin-bottom: 0.5rem; color: #0f172a; }
-        p { color: #64748b; margin-bottom: 2rem; }
-
-        /* Form Inputs */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        input[type="text"], 
-        input[type="tel"], 
-        select, 
-        textarea {
+        /* --- Landing Page Styling --- */
+        .landing-logo {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
-        .radio-group {
             display: flex;
-            gap: 1.5rem;
-            margin-top: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
         }
 
-        .radio-option {
+        .landing-logo img {
+            max-width: 220px;
+            height: auto;
+        }
+
+        .for-sale-preview {
+            width: 100%;
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
+            justify-content: center;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-grey);
         }
 
-        /* Buttons */
-        .btn {
-            background-color: var(--primary);
+        /* Board Preview Layout */
+        .preview-board {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .board-top {
+            background-color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .board-logo-preview {
+            max-width: 140px;
+            height: auto;
+        }
+
+        .board-bottom {
+            background-color: var(--primary-teal);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .preview-status { font-size: 1.6rem; font-weight: bold; margin-bottom: 0.8rem; }
+        .preview-name { font-size: 1.1rem; margin-bottom: 0.2rem; }
+        .preview-phone { font-size: 1.1rem; }
+        .preview-accent { background-color: var(--accent-green); height: 10px; width: 50%; margin: 0 auto; margin-top: 1rem; }
+
+        /* --- Global Button Styling --- */
+        .btn {
+            background-color: var(--primary-teal);
+            color: white;
+            padding: 1rem;
             border: none;
             border-radius: 6px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background-color 0.2s;
             width: 100%;
+            text-align: center;
         }
 
-        .btn:hover { background-color: var(--primary-hover); }
+        .btn:hover { background-color: #013e3e; }
 
         .btn-secondary {
             background-color: #e2e8f0;
@@ -106,125 +126,186 @@
             margin-top: 1rem;
         }
         .btn-secondary:hover { background-color: #cbd5e1; }
-        
-        .alert {
-            padding: 1rem;
-            background-color: #dcfce7;
-            color: #166534;
+
+        /* --- Form Styling --- */
+        .form-group { margin-bottom: 1.25rem; }
+        .flex-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .flex-item { flex: 1 1 200px; }
+
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        input[type="text"], input[type="tel"], select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-grey);
             border-radius: 6px;
-            margin-bottom: 1rem;
-            text-align: center;
+            box-sizing: border-box;
+            font-size: 1rem;
         }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        .radio-group { display: flex; gap: 1.5rem; margin-top: 0.5rem; }
+        .radio-option { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+
+        fieldset {
+            border: 1px solid var(--border-grey);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        legend { padding: 0 0.5rem; font-weight: 600; color: #111; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    
+    <!-- Header Card -->
+    <div class="card" style="text-align: center; padding: 1.5rem 2rem;">
+        <h1>TYSON PROPERTIES BOARD REQUISITION APP</h1>
+    </div>
+
     <!-- LANDING PAGE VIEW -->
-    <div id="landingView" class="landing-view">
-        <h1>Property Advertising Boards</h1>
-        <p>Order custom property boards quickly and easily.</p>
-        <button class="btn" onclick="showPage('formView')">Request Boards</button>
+    <div id="landingView" class="card">
+        <h2 style="text-align: center;">Welcome</h2>
+        <p class="subtitle" style="text-align: center;">Request for your property advertising board to be made easily.</p>
+        
+        <p style="text-align: center; color: #666; margin-top: 1rem; font-size: 0.9rem;">Below is an example of a requested For Sale board:</p>
+        
+        <!-- Interactive Preview Card -->
+        <div class="for-sale-preview">
+            <div class="preview-board">
+                <div class="board-top">
+                    <strong style="color: var(--primary-teal); font-size: 1.2rem;">TYSON PROPERTIES</strong>
+                </div>
+                <div class="board-bottom">
+                    <div class="preview-status">FOR SALE</div>
+                    <div class="preview-name">NAME SURNAME</div>
+                    <div class="preview-phone">061 234 5678</div>
+                    <div class="preview-accent"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" onclick="showForm()" style="text-transform: uppercase; margin-top: 1rem;">
+            Request for your property advertising board
+        </button>
     </div>
 
     <!-- FORM PAGE VIEW -->
-    <div id="formView" class="hidden">
-        <h2 style="margin-top: 0;">Board Requisition Form</h2>
+    <div id="formView" class="hidden card">
+        <h2>Board Requisition Form</h2>
         
         <form action="https://api.web3forms.com/submit" method="POST" id="requisitionForm">
-            <!-- IMPORTANT: Replace YOUR_ACCESS_KEY_HERE with your Web3Forms Key -->
-            <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
-            <input type="hidden" name="subject" value="New Property Board Requisition">
+            
+            <!-- Web3Forms Key Configured -->
+            <input type="hidden" name="access_key" value="1c64725d-299c-4255-bd4f-25decd3f27f9">
+            <input type="hidden" name="subject" value="New Tyson Properties Board Requisition">
+            
+            <!-- Agent Details Section -->
+            <fieldset>
+                <legend>Agent Details</legend>
+                <div class="flex-row">
+                    <div class="form-group flex-item">
+                        <label for="agentName">Agent Name *</label>
+                        <input type="text" id="agentName" name="Agent 1 Name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group flex-item">
+                        <label for="phoneNumber">Phone Number *</label>
+                        <input type="tel" id="phoneNumber" name="Phone Number" required placeholder="082 123 4567">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="agent2Name">Agent 2 Name (Optional)</label>
+                    <input type="text" id="agent2Name" name="Agent 2 Name" placeholder="Jane Doe">
+                </div>
+            </fieldset>
 
-            <!-- Agent Details -->
-            <div class="form-group">
-                <label for="agentName">Agent Name *</label>
-                <input type="text" id="agentName" name="Agent 1 Name" required placeholder="e.g. John Doe">
-            </div>
-
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number *</label>
-                <input type="tel" id="phoneNumber" name="Phone Number" required placeholder="e.g. 082 123 4567">
-            </div>
-
-            <div class="form-group">
-                <label for="agent2Name">Agent 2 Name</label>
-                <input type="text" id="agent2Name" name="Agent 2 Name" placeholder="Optional second agent">
-            </div>
-
-            <!-- Quantity Dropdown -->
-            <div class="form-group">
-                <label for="boardQuantity">Boards Quantity *</label>
-                <select id="boardQuantity" name="Boards Quantity" required onchange="toggleConditionalFields(this.value)">
-                    <option value="">Select quantity...</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select>
-            </div>
+            <!-- Board Quantity Selection -->
+            <fieldset>
+                <legend>Order Details</legend>
+                <div class="form-group">
+                    <label for="boardQuantity">Boards Quantity *</label>
+                    <select id="boardQuantity" name="Boards Quantity" required onchange="toggleConditionalFields(this.value)">
+                        <option value="">Select quantity...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+            </fieldset>
 
             <!-- Dynamic Options Section -->
             <div id="conditionalFields" class="hidden">
-                <div class="form-group">
-                    <label for="boardType">Board Type</label>
-                    <select id="boardType" name="Board Type">
-                        <option value="For Sale">For Sale</option>
-                        <option value="To Let">To Let</option>
-                        <option value="On Show">On Show</option>
-                        <option value="Sold">Sold</option>
-                        <option value="Rented/Let By">Rented/Let By</option>
-                        <option value="Commercial For Sale">Commercial For Sale</option>
-                        <option value="Commercial To Let">Commercial To Let</option>
-                        <option value="Commercial Sold">Commercial Sold</option>
-                        <option value="Commercial Rented">Commercial Rented</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="stickers">Stickers</label>
-                    <select id="stickers" name="Sticker Option">
-                        <option value="Sole Mandate">Sole Mandate</option>
-                        <option value="Joint Mandate">Joint Mandate</option>
-                        <option value="CLS Mandate">CLS Mandate</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Arrow</label>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="Include Arrow" value="Yes" checked> Yes
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="Include Arrow" value="No"> No
-                        </label>
+                <fieldset>
+                    <legend>Board Configuration</legend>
+                    <div class="flex-row">
+                        <div class="form-group flex-item">
+                            <label for="boardType">Board Type</label>
+                            <select id="boardType" name="Board Type">
+                                <option value="For Sale">For Sale</option>
+                                <option value="To Let">To Let</option>
+                                <option value="On Show">On Show</option>
+                                <option value="Sold">Sold</option>
+                                <option value="Rented/Let By">Rented/Let By</option>
+                                <option value="Commercial For Sale">Commercial For Sale</option>
+                                <option value="Commercial To Let">Commercial To Let</option>
+                                <option value="Commercial Sold">Commercial Sold</option>
+                                <option value="Commercial Rented">Commercial Rented</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-item">
+                            <label for="stickers">Stickers</label>
+                            <select id="stickers" name="Stickers">
+                                <option value="Sole Mandate">Sole Mandate</option>
+                                <option value="Joint Mandate">Joint Mandate</option>
+                                <option value="CLS Mandate">CLS Mandate</option>
+                                <option value="Open Mandate (No Sticker)">Open Mandate (No Sticker)</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="notes">Add a notes (Special Requests)</label>
-                    <textarea id="notes" name="Special Requests / Notes" rows="4" placeholder="Enter extra details or special instructions..."></textarea>
-                </div>
+                    <div class="form-group">
+                        <label>Include Arrow?</label>
+                        <div class="radio-group">
+                            <label class="radio-option"><input type="radio" name="Include Arrow" value="Yes" checked> Yes</label>
+                            <label class="radio-option"><input type="radio" name="Include Arrow" value="No"> No</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Add a notes (Special Requests)</label>
+                        <textarea id="notes" name="Special Requests / Notes" placeholder="Enter special requests or custom instructions..."></textarea>
+                    </div>
+                </fieldset>
             </div>
 
             <button type="submit" class="btn">Submit Requisition</button>
-            <button type="button" class="btn btn-secondary" onclick="showPage('landingView')">Back to Home</button>
+            <button type="button" class="btn btn-secondary" onclick="showLanding()">Back to Home</button>
         </form>
     </div>
+
 </div>
 
 <script>
-    // Navigation Routing
-    function showPage(pageId) {
-        document.getElementById('landingView').classList.add('hidden');
+    // Navigation Control
+    function showLanding() {
+        document.getElementById('landingView').classList.remove('hidden');
         document.getElementById('formView').classList.add('hidden');
-        document.getElementById(pageId).classList.remove('hidden');
+        document.getElementById('requisitionForm').reset();
+        toggleConditionalFields(''); 
     }
 
-    // Toggle Conditional Section based on Quantity Selection
+    function showForm() {
+        document.getElementById('landingView').classList.add('hidden');
+        document.getElementById('formView').classList.remove('hidden');
+        window.scrollTo(0, 0);
+    }
+
+    // Dynamic Fields Display logic
     function toggleConditionalFields(quantity) {
         const conditionalDiv = document.getElementById('conditionalFields');
         if (quantity && quantity >= 1 && quantity <= 6) {
@@ -234,5 +315,6 @@
         }
     }
 </script>
+
 </body>
 </html>
