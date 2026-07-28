@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Board Requisition</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin: 1rem;
+            box-sizing: border-box;
+        }
+
+        .hidden { display: none; }
+
+        /* Landing View */
+        .landing-view {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        h1 { margin-bottom: 0.5rem; color: #0f172a; }
+        p { color: #64748b; margin-bottom: 2rem; }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], 
+        input[type="tel"], 
+        select, 
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover { background-color: var(--primary-hover); }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #475569;
+            margin-top: 1rem;
+        }
+        .btn-secondary:hover { background-color: #cbd5e1; }
+        
+        .alert {
+            padding: 1rem;
+            background-color: #dcfce7;
+            color: #166534;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- LANDING PAGE VIEW -->
+    <div id="landingView" class="landing-view">
+        <h1>Property Advertising Boards</h1>
+        <p>Order custom property boards quickly and easily.</p>
+        <button class="btn" onclick="showPage('formView')">Request Boards</button>
+    </div>
+
+    <!-- FORM PAGE VIEW -->
+    <div id="formView" class="hidden">
+        <h2 style="margin-top: 0;">Board Requisition Form</h2>
+        
+        <form action="https://api.web3forms.com/submit" method="POST" id="requisitionForm">
+            <!-- IMPORTANT: Replace YOUR_ACCESS_KEY_HERE with your Web3Forms Key -->
+            <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+            <input type="hidden" name="subject" value="New Property Board Requisition">
+
+            <!-- Agent Details -->
+            <div class="form-group">
+                <label for="agentName">Agent Name *</label>
+                <input type="text" id="agentName" name="Agent 1 Name" required placeholder="e.g. John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number *</label>
+                <input type="tel" id="phoneNumber" name="Phone Number" required placeholder="e.g. 082 123 4567">
+            </div>
+
+            <div class="form-group">
+                <label for="agent2Name">Agent 2 Name</label>
+                <input type="text" id="agent2Name" name="Agent 2 Name" placeholder="Optional second agent">
+            </div>
+
+            <!-- Quantity Dropdown -->
+            <div class="form-group">
+                <label for="boardQuantity">Boards Quantity *</label>
+                <select id="boardQuantity" name="Boards Quantity" required onchange="toggleConditionalFields(this.value)">
+                    <option value="">Select quantity...</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+
+            <!-- Dynamic Options Section -->
+            <div id="conditionalFields" class="hidden">
+                <div class="form-group">
+                    <label for="boardType">Board Type</label>
+                    <select id="boardType" name="Board Type">
+                        <option value="For Sale">For Sale</option>
+                        <option value="To Let">To Let</option>
+                        <option value="On Show">On Show</option>
+                        <option value="Sold">Sold</option>
+                        <option value="Rented/Let By">Rented/Let By</option>
+                        <option value="Commercial For Sale">Commercial For Sale</option>
+                        <option value="Commercial To Let">Commercial To Let</option>
+                        <option value="Commercial Sold">Commercial Sold</option>
+                        <option value="Commercial Rented">Commercial Rented</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="stickers">Stickers</label>
+                    <select id="stickers" name="Sticker Option">
+                        <option value="Sole Mandate">Sole Mandate</option>
+                        <option value="Joint Mandate">Joint Mandate</option>
+                        <option value="CLS Mandate">CLS Mandate</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Arrow</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="Include Arrow" value="Yes" checked> Yes
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="Include Arrow" value="No"> No
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Add a notes (Special Requests)</label>
+                    <textarea id="notes" name="Special Requests / Notes" rows="4" placeholder="Enter extra details or special instructions..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Submit Requisition</button>
+            <button type="button" class="btn btn-secondary" onclick="showPage('landingView')">Back to Home</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Navigation Routing
+    function showPage(pageId) {
+        document.getElementById('landingView').classList.add('hidden');
+        document.getElementById('formView').classList.add('hidden');
+        document.getElementById(pageId).classList.remove('hidden');
+    }
+
+    // Toggle Conditional Section based on Quantity Selection
+    function toggleConditionalFields(quantity) {
+        const conditionalDiv = document.getElementById('conditionalFields');
+        if (quantity && quantity >= 1 && quantity <= 6) {
+            conditionalDiv.classList.remove('hidden');
+        } else {
+            conditionalDiv.classList.add('hidden');
+        }
+    }
+</script>
+</body>
+</html>
