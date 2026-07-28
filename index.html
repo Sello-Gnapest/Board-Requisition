@@ -7,7 +7,7 @@
     <style>
         :root {
             --primary-teal: #015151; /* Main Tyson brand color */
-            --accent-green: #9acd32; /* Yellow-green stripe color */
+            --accent-green: #9acd32;
             --bg-off-white: #f5f5f5;
             --text-dark: #333;
             --border-grey: #ccc;
@@ -27,7 +27,7 @@
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             margin: 1rem;
             display: flex;
             flex-direction: column;
@@ -44,64 +44,30 @@
         .hidden { display: none !important; }
 
         /* Typography */
-        h1 { margin: 0 0 1rem 0; font-size: 1.4rem; color: var(--primary-teal); }
+        h1 { margin: 0 0 0.5rem 0; font-size: 1.3rem; color: var(--primary-teal); text-align: center; }
         h2 { margin: 0 0 1rem 0; font-size: 1.2rem; color: #111; }
-        .subtitle { color: #666; margin-bottom: 2rem; }
+        .subtitle { color: #666; margin-bottom: 1.5rem; text-align: center; font-size: 0.95rem; }
 
-        /* --- Landing Page Styling --- */
-        .landing-logo {
+        /* --- Image Preview Container --- */
+        .image-preview-container {
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        .landing-logo img {
-            max-width: 220px;
-            height: auto;
-        }
-
-        .for-sale-preview {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin: 1.5rem 0;
+            align-items: center;
+            margin: 1rem 0 1.5rem 0;
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid var(--border-grey);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            background-color: #fff;
         }
 
-        /* Board Preview Layout */
-        .preview-board {
-            display: flex;
-            flex-direction: column;
+        .image-preview-container img {
             width: 100%;
-            max-width: 320px;
-            text-align: center;
-        }
-
-        .board-top {
-            background-color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: center;
-        }
-
-        .board-logo-preview {
-            max-width: 140px;
+            max-width: 340px;
             height: auto;
+            display: block;
+            border-radius: 6px;
         }
-
-        .board-bottom {
-            background-color: var(--primary-teal);
-            color: white;
-            padding: 1.5rem;
-        }
-
-        .preview-status { font-size: 1.6rem; font-weight: bold; margin-bottom: 0.8rem; }
-        .preview-name { font-size: 1.1rem; margin-bottom: 0.2rem; }
-        .preview-phone { font-size: 1.1rem; }
-        .preview-accent { background-color: var(--accent-green); height: 10px; width: 50%; margin: 0 auto; margin-top: 1rem; }
 
         /* --- Global Button Styling --- */
         .btn {
@@ -116,6 +82,7 @@
             transition: background-color 0.2s;
             width: 100%;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .btn:hover { background-color: #013e3e; }
@@ -160,35 +127,23 @@
 
 <div class="container">
     
-    <!-- Header Card -->
-    <div class="card" style="text-align: center; padding: 1.5rem 2rem;">
-        <h1>TYSON PROPERTIES BOARD REQUISITION APP</h1>
-    </div>
-
     <!-- LANDING PAGE VIEW -->
     <div id="landingView" class="card">
-        <h2 style="text-align: center;">Welcome</h2>
-        <p class="subtitle" style="text-align: center;">Request for your property advertising board to be made easily.</p>
+        <h1>TYSON PROPERTIES BOARD REQUISITION APP</h1>
+        <p class="subtitle">Request for your property advertising board to be made easily</p>
         
-        <p style="text-align: center; color: #666; margin-top: 1rem; font-size: 0.9rem;">Below is an example of a requested For Sale board:</p>
+        <p style="text-align: center; color: #444; margin-top: 0.5rem; font-size: 0.85rem; font-weight: 600;">
+            Below is an example of a requested For Sale board:
+        </p>
         
-        <!-- Interactive Preview Card -->
-        <div class="for-sale-preview">
-            <div class="preview-board">
-                <div class="board-top">
-                    <strong style="color: var(--primary-teal); font-size: 1.2rem;">TYSON PROPERTIES</strong>
-                </div>
-                <div class="board-bottom">
-                    <div class="preview-status">FOR SALE</div>
-                    <div class="preview-name">NAME SURNAME</div>
-                    <div class="preview-phone">061 234 5678</div>
-                    <div class="preview-accent"></div>
-                </div>
-            </div>
+        <!-- Image display container -->
+        <div class="image-preview-container">
+            <img src="Tyson For Sale Board.jpg" alt="Tyson Properties For Sale Board Preview">
         </div>
 
-        <button class="btn" onclick="showForm()" style="text-transform: uppercase; margin-top: 1rem;">
-            Request for your property advertising board
+        <!-- Request Board/s Button -->
+        <button class="btn" onclick="showForm()" style="text-transform: uppercase;">
+            Request Boards
         </button>
     </div>
 
@@ -198,7 +153,7 @@
         
         <form action="https://api.web3forms.com/submit" method="POST" id="requisitionForm">
             
-            <!-- Web3Forms Key Configured -->
+            <!-- Web3Forms Key -->
             <input type="hidden" name="access_key" value="1c64725d-299c-4255-bd4f-25decd3f27f9">
             <input type="hidden" name="subject" value="New Tyson Properties Board Requisition">
             
@@ -266,6 +221,17 @@
                                 <option value="Open Mandate (No Sticker)">Open Mandate (No Sticker)</option>
                             </select>
                         </div>
+                    </div>
+
+                    <!-- NEW: Mounting / Frame Options Dropdown -->
+                    <div class="form-group">
+                        <label for="mountingOption">Frame &amp; Mounting Option</label>
+                        <select id="mountingOption" name="Frame & Mounting Option">
+                            <option value="Metal Frame">Metal Frame</option>
+                            <option value="Hanging Frame">Hanging Frame</option>
+                            <option value="Cable Ties">Cable Ties</option>
+                            <option value="Double sided Tape">Double sided Tape</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
