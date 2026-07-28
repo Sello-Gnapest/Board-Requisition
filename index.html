@@ -212,18 +212,10 @@
             <!-- Dynamic Boards Container -->
             <div id="boardsContainer"></div>
 
-            <!-- Global Options (Arrow & Notes) -->
+            <!-- Global Options (Notes & Submit) -->
             <div id="globalOptions" class="hidden">
                 <fieldset>
                     <legend>Additional Details</legend>
-                    <div class="form-group">
-                        <label>Include Arrow?</label>
-                        <div class="radio-group">
-                            <label class="radio-option"><input type="radio" name="Include Arrow" value="Yes" checked> Yes</label>
-                            <label class="radio-option"><input type="radio" name="Include Arrow" value="No"> No</label>
-                        </div>
-                    </div>
-                    
                     <div class="form-group">
                         <label for="notes">Add a notes (Special Requests)</label>
                         <textarea id="notes" name="Special Requests / Notes" placeholder="Enter special requests or custom instructions..."></textarea>
@@ -277,7 +269,7 @@
                 repeatCheckboxHTML = `
                     <label class="repeat-checkbox">
                         <input type="checkbox" id="repeatBoard${i}" onchange="toggleRepeatBoard(this, ${i})">
-                        Repeat Board 1 Configuration
+                        Repeat above Configuration
                     </label>
                 `;
             }
@@ -288,7 +280,7 @@
                 <div class="flex-row">
                     <div class="form-group flex-item">
                         <label for="boardType_${i}">Board Type</label>
-                        <select id="boardType_${i}" name="Board ${i} - Type" onchange="syncIfRepeated(${i})">
+                        <select id="boardType_${i}" name="Board ${i} - Type" onchange="triggerCascadeSync(${i})">
                             <option value="For Sale">For Sale</option>
                             <option value="To Let">To Let</option>
                             <option value="On Show">On Show</option>
@@ -302,7 +294,7 @@
                     </div>
                     <div class="form-group flex-item">
                         <label for="stickers_${i}">Stickers</label>
-                        <select id="stickers_${i}" name="Board ${i} - Sticker" onchange="syncIfRepeated(${i})">
+                        <select id="stickers_${i}" name="Board ${i} - Sticker" onchange="triggerCascadeSync(${i})">
                             <option value="Sole Mandate">Sole Mandate</option>
                             <option value="Joint Mandate">Joint Mandate</option>
                             <option value="CLS Mandate">CLS Mandate</option>
@@ -312,42 +304,64 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="mounting_${i}">Frame &amp; Mounting Option</label>
-                    <select id="mounting_${i}" name="Board ${i} - Mounting" onchange="syncIfRepeated(${i})">
+                    <label for="mounting_${i}">Mounting Option</label>
+                    <select id="mounting_${i}" name="Board ${i} - Mounting Option" onchange="triggerCascadeSync(${i})">
                         <option value="Metal Frame">Metal Frame</option>
                         <option value="Hanging Frame">Hanging Frame</option>
                         <option value="Cable Ties">Cable Ties</option>
                         <option value="Double sided Tape">Double sided Tape</option>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label>Include Arrow?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="Board ${i} - Include Arrow" id="arrowYes_${i}" value="Yes" checked onchange="triggerCascadeSync(${i})"> Yes
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="Board ${i} - Include Arrow" id="arrowNo_${i}" value="No" onchange="triggerCascadeSync(${i})"> No
+                        </label>
+                    </div>
+                </div>
             `;
             container.appendChild(boardFieldset);
         }
     }
 
-    // Handles logic when "Repeat Board 1 Config" checkbox is toggled
+    // Handles logic when "Repeat above Configuration" checkbox is toggled
     function toggleRepeatBoard(checkbox, boardIndex) {
         if (checkbox.checked) {
-            copyBoard1To(boardIndex);
+            copyPreviousTo(boardIndex);
+        }
+        triggerCascadeSync(boardIndex);
+    }
+
+    // Copies values from Board (targetIndex - 1) to Board targetIndex
+    function copyPreviousTo(targetIndex) {
+        const prevIndex = targetIndex - 1;
+        document.getElementById(`boardType_${targetIndex}`).value = document.getElementById(`boardType_${prevIndex}`).value;
+        document.getElementById(`stickers_${targetIndex}`).value = document.getElementById(`stickers_${prevIndex}`).value;
+        document.getElementById(`mounting_${targetIndex}`).value = document.getElementById(`mounting_${prevIndex}`).value;
+        
+        const prevArrowYes = document.getElementById(`arrowYes_${prevIndex}`).checked;
+        if (prevArrowYes) {
+            document.getElementById(`arrowYes_${targetIndex}`).checked = true;
+        } else {
+            document.getElementById(`arrowNo_${targetIndex}`).checked = true;
         }
     }
 
-    // Copies values from Board 1 to target Board
-    function copyBoard1To(targetIndex) {
-        document.getElementById(`boardType_${targetIndex}`).value = document.getElementById('boardType_1').value;
-        document.getElementById(`stickers_${targetIndex}`).value = document.getElementById('stickers_1').value;
-        document.getElementById(`mounting_${targetIndex}`).value = document.getElementById('mounting_1').value;
-    }
-
-    // If Board 1 is modified, automatically update all boards that have "Repeat" checked
-    function syncIfRepeated(sourceIndex) {
-        if (sourceIndex === 1) {
-            const qty = parseInt(document.getElementById('boardQuantity').value) || 1;
-            for (let i = 2; i <= qty; i++) {
-                const chk = document.getElementById(`repeatBoard${i}`);
-                if (chk && chk.checked) {
-                    copyBoard1To(i);
-                }
+    // Cascades changes down through all subsequent boards that have "Repeat above Configuration" checked
+    function triggerCascadeSync(changedIndex) {
+        const qty = parseInt(document.getElementById('boardQuantity').value) || 1;
+        for (let i = changedIndex + 1; i <= qty; i++) {
+            const chk = document.getElementById(`repeatBoard${i}`);
+            if (chk && chk.checked) {
+                copyPreviousTo(i);
+            } else {
+                // Break cascade chain if a board is not set to repeat above
+                break;
             }
         }
     }
